@@ -7,7 +7,7 @@
 #define GLEW_STATIC
 #include "GL\glew.h"
 #include "GLFW\glfw3.h"
-
+#include <math.h>
 #include "glm\gtx\transform.hpp"
 #include "glm\glm.hpp"
 
@@ -43,7 +43,7 @@ Shader *shader;
 //Declaración de ventana
 GLFWwindow *window;
 
-void actualizar() { 
+/*void actualizar() { 
 	int estadoDerecha = 
 		glfwGetKey(window, GLFW_KEY_RIGHT);
 	if (estadoDerecha == GLFW_PRESS) {
@@ -63,16 +63,26 @@ void actualizar() {
 	}
 	
 	
+}*/
+
+void actualizar()
+{
+	pajaro->transformaciones = translate(pajaro->transformaciones, vec3(0.0001f, 0.0f, 0.0f));
+	pajaro->transformaciones = rotate(pajaro->transformaciones, 0.000004f, vec3(0.0f, 1.0f, 0.0f));
+
+
 }
 
 void dibujar() {
 	cielo->dibujar(GL_QUADS);
 	cuadrado->dibujar(GL_POLYGON);
 	nave->dibujar(GL_POLYGON);
+	
 	puerta->dibujar(GL_QUADS);
 	ventana->dibujar(GL_QUADS);
 	lineapuerta->dibujar(GL_LINES);
 	lineaventana->dibujar(GL_LINES);
+	pajaro->dibujar(GL_POLYGON);
 }
 void inicializarCielo() {
 	cielo = new Modelo();
@@ -119,18 +129,7 @@ void inicializarFigura() {
 	nave->vertices.push_back(v3);
 }
 
-void inicializarPajaro() {
-	pajaro = new Modelo();
-	Vertice v1 =
-	{ vec4(-0.1f,0.1f,0.0f,1.0f), vec4(1.0f,0.0f,1.0f,1.0f) };
-	Vertice v2 =
-	{ vec4(0.0f,0.1f,0.0f,1.0f), vec4(1.0f,0.0f,1.0f,1.0f) };
-	Vertice v3 =
-	{ vec4(0.1f,0.2f,0.0f,1.0f), vec4(1.0f,0.0f,1.0f,1.0f) };
-	pajaro->vertices.push_back(v1);
-	pajaro->vertices.push_back(v2);
-	pajaro->vertices.push_back(v3);
-}
+
 
 void inicializarPuerta()
 {
@@ -188,6 +187,19 @@ void inicializarlineaventana()
 	lineaventana->vertices.push_back(v2);
 }
 
+void inicializarPajaro() {
+	pajaro = new Modelo();
+	Vertice v1 =
+	{ vec4(-0.1f,0.0f,0.0f,1.0f), vec4(1.0f,1.0f,1.0f,1.0f) };
+	Vertice v2 =
+	{ vec4(0.0f,0.1f,0.0f,1.0f), vec4(1.0f,1.0f,1.0f,1.0f) };
+	Vertice v3 =
+	{ vec4(0.1f,0.0f,0.0f,1.0f), vec4(1.0f,1.0f,1.0f,1.0f) };
+	pajaro->vertices.push_back(v1);
+	pajaro->vertices.push_back(v2);
+	pajaro->vertices.push_back(v3);
+}
+
 
 int main()
 {
@@ -238,9 +250,9 @@ int main()
 	inicializarFigura();
 	inicializarPuerta();
 	inicializarVentana();
-	inicializarPajaro();
 	inicializarlineap();
 	inicializarlineaventana();
+	inicializarPajaro();
 	
 
 	//Crear instancia del shader
@@ -274,15 +286,16 @@ int main()
 	ventana->shader = shader;
 	ventana->inicializarVertexArray(posicionID, colorID, transformacionesID);
 
-	pajaro->shader = shader;
-	pajaro->inicializarVertexArray(posicionID, colorID, transformacionesID);
-
+	
 	lineapuerta->shader = shader;
 	lineapuerta->inicializarVertexArray(posicionID, colorID, transformacionesID);
 
 	lineaventana->shader = shader;
 	lineaventana->inicializarVertexArray(posicionID, colorID, transformacionesID);
 	
+	pajaro->shader = shader;
+	pajaro->inicializarVertexArray(posicionID, colorID, transformacionesID);
+
 
 	
 	//Ciclo de dibujo
@@ -295,6 +308,7 @@ int main()
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		//rutina de dibujo
+
 		actualizar();
 		dibujar();
 
